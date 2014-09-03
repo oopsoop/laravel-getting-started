@@ -51,7 +51,7 @@ Zend Engine v2.4.0, Copyright (c) 1998-2012 Zend Technologies
      with XCache v2.0.1, Copyright (c) 2005-2012, by mOo  
 ```
 
-如果你还没安装 PHP，请访问 http://php.net/，找到针对所用系统的安装方法。
+如果你还没安装 PHP，请访问 http://php.net/ ，找到针对所用系统的安装方法。
 
 很多类 Unix 系统都自带了版本尚新的 SQLite3。Windows 等其他操作系统的用户可以在 SQLite3 的网站上找到安装说明。然后，确认是否在 PATH 中：
 
@@ -81,7 +81,7 @@ $ composer create-project laravel/laravel your-project-name --prefer-dist
 
 这个命令会下载并安装一份全新的 Laravel 存放在指定的 your-project-name 的目录中。
 
-> 如果您想要手动安装 Laravel 可以直接从 [Github 上的 Laravel Respoitory](https://github.com/laravel/laravel/archive/master.zip）下载一份代码。然后在解压后的根目录里，执行 composer install 即可，这个命令会把框架所需要的依赖下载完整。
+> 如果您想要手动安装 Laravel 可以直接从 [Github 上的 Laravel Respoitory](https://github.com/laravel/laravel/archive/master.zip)下载一份代码。然后在解压后的根目录里，执行 composer install 即可，这个命令会把框架所需要的依赖下载完整。
 
 ###3.2 创建 Blog 程序
 Artisan 是 Laravel 内建的命令行工具，它提供了一些有用的命令协助您开发，它是由强大的 Symfony Console 组件所驱动。
@@ -582,7 +582,49 @@ link_to_route 是 Laravel 内置的视图帮助方法之一，根据提供的文
 
 ###5.10 添加数据验证
 
-TODO
+在 app/controllers/ArticlesController.php 文件中，修改 ArticlesController 控制器 store 动作：
+
+```
+	public function store()
+	{
+		$rules = array('title' => 'required|min:5');
+
+		$validator = Validator::make(Input::all(), $rules);
+
+        if ($validator->fails())
+        {
+            return Redirect::route('articles.create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $article = Article::create(array('title'=>Input::get('title'), 'text'=>Input::get('text')));
+
+		return Redirect::route('articles.show', array($article->id));
+	}
+```
+
+然后修改  app/views/articles/create.blade.php 添加 ：
+
+***
+@if ($errors->any())  
+&lt;div id="error_explanation"&gt;  
+    &lt;h2&gt;{{ count($errors->all()) }} prohibited 
+      this article from being saved:&lt;/h2&gt;    
+    &lt;ul&gt;   
+    @foreach ($errors->all() as $message)   
+      &lt;li&gt;{{ $message }}&lt;/li&gt;  
+    @endforeach   
+    &lt;/ul&gt;  
+  &lt;/div&gt;  
+@endif
+***
+
+再次访问 http://localhost:8000/articles/create，尝试发布一篇没有标题的文章，会看到一个很有用的错误提示。
+
+###5.11 更新文章
+
+TODO 
 
 ##接下来做什么
 至此，我们开发了第一个 Laravel 程序，请尽情的修改、试验。在开发过程中难免会需要帮助，如果使用 Laravel 时需要协助，可以使用这些资源：
@@ -599,7 +641,7 @@ TODO
 非 UTF-8 编码的数据经常来源于：
 
 * 你的文本编辑器：大多数文本编辑器（例如 TextMate）默认使用 UTF-8 编码保存文件。如果你的编辑器没使用 UTF-8 编码，有可能是你在模板中输入了特殊字符（例如 é），在浏览器中显示为方块和问号。这种问题也会出现在国际化文件中。默认不使用 UTF-8 保存文件的编辑器（例如 Dreamweaver 的某些版本）都会提供一种方法，把默认编码设为 UTF-8。记得要修改。
-* 你的数据库：默认情况下，Rails 会把从数据库中取出的数据转换成 UTF-8 格式。如果数据库内部不使用 UTF-8 编码，就无法保存用户输入的所有字符。例如，数据库内部使用 Latin-1 编码，用户输入俄语、希伯来语或日语字符时，存进数据库时就会永远丢失。如果可能，在数据库中尽量使用 UTF-8 编码。
+* 你的数据库：默认情况下，Laravel 会把从数据库中取出的数据转换成 UTF-8 格式。如果数据库内部不使用 UTF-8 编码，就无法保存用户输入的所有字符。例如，数据库内部使用 Latin-1 编码，用户输入俄语、希伯来语或日语字符时，存进数据库时就会永远丢失。如果可能，在数据库中尽量使用 UTF-8 编码。
 
 ##反馈
 欢迎帮忙改善文档质量。
