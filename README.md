@@ -731,6 +731,84 @@ method: put ( patch ) 选项告诉 Laravel，提交这个表单时使用 PUT 方
 {{ link_to_route('articles.edit', 'Edit', $article->id) }}
 ```
 
+###5.12 使用局部视图去掉视图中的重复代码
+
+编辑文章页面和新建文章页面很相似，显示错误提示的代码是相同的。下面使用局部视图去掉两个视图中的重复代码。
+
+新建 app/views/notifications.blade.php 文件，写入以下代码：
+
+```
+@if ($errors->any())
+<div id="error_explanation">
+    <h2>{{ count($errors->all()) }} prohibited
+      this article from being saved:</h2>
+    <ul>
+    @foreach ($errors->all() as $message)
+      <li>{{ $message }}</li>
+    @endforeach
+    </ul>
+  </div>
+@endif
+```
+
+下面来修改 app/views/articles/creat.blade.php 和 edit.blade.php  视图，使用新建的局部视图，把其中的上面代码全删掉，替换成：
+
+```
+@include('notifications')
+```
+
+###5.13 删除文章
+
+现在介绍 CRUD 中的 D，从数据库中删除文章。按照 REST 架构的约定，删除文章的路由是：
+
+> DELETE articles/{articles}        | articles.destroy | ArticlesController@destroy
+
+删除资源时使用 DELETE 请求。如果还使用 GET 请求，可以构建如下所示的恶意地址：
+
+```
+<a href='http://example.com/articles/1/destroy'>look at this cat!</a>
+```
+
+删除资源使用 DELETE 方法，路由会把请求发往 app/controllers/ArticlesController.php 中的 destroy 动作。修改 destroy 动作：
+
+```
+	public function destroy($id)
+	{
+		Article::destroy($id);
+
+		return Redirect::route('articles.index');
+	}
+```
+
+想把记录从数据库删除，可以在模型对象上调用 destroy 方法。注意，我们无需为这个动作编写视图，因为它会转向 index 动作。
+
+最后，在 index 动作的模板（app/views/articles/index.blade.php）中加上“Destroy”链接：
+
+```
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Text</th>
+    <th colspan="2"></th>
+  </tr>
+
+  @foreach ($articles as $article)
+    <tr>
+      <td>{{ $article->title }}</td>
+      <td>{{ $article->text }}</td>
+      <td>{{ link_to_route('articles.show', 'Show', $article->id) }}</td>
+      <td>{{ link_to_route('articles.edit', 'Edit', $article->id) }}</td>
+      <td>
+        {{ Form::open(array('method' => 'DELETE', 'route' => array('articles.destroy', $article->id))) }}
+          {{ Form::submit('Delete') }}
+        {{ Form::close() }}
+      </td>
+    </tr>
+  @endforeach
+</table>
+```
+
+恭喜，现在你可以新建、显示、列出、更新、删除文章了。
 
 
 ##接下来做什么
