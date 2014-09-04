@@ -306,7 +306,9 @@ TODO 图
 
 新建文件 app/views/articles/create.blade.php，写入如下代码：
 
-`<h1>New Article</h1>`
+```
+<h1>New Article</h1>
+```
 
 再次刷新 http://localhost:8000/articles/create，可以看到页面中显示了一个标头。现在路由、控制器、动作和视图都能正常运行了。接下来要编写新建文章的表单了。
 
@@ -494,16 +496,19 @@ fillable 属性允许在动作中调用模型的 create 方法使用 title 和 t
 
 然后，新建 app/views/articles/show.blade.php 文件，写入下面的代码：
 
-***
-&lt;p&gt;  
-  &lt;strong&gt;Title:&lt;/strong&gt;  
-  {{ $article->title }}  
-&lt;/p&gt;  
-&lt;p&gt;  
-  &lt;strong&gt;Text:&lt;/strong&gt;  
-  {{ $article->text }}  
-&lt;/p&gt;  
-***
+
+
+```
+<p>
+  <strong>Title:</strong>
+  {{ $article->title }}
+</p>
+
+<p>
+  <strong>Text:</strong>
+  {{ $article->text }}
+</p>
+```
 
 做了以上修改后，就能真正的新建文章了。访问 http://localhost:8000/articles/create，自己试试。
 
@@ -526,24 +531,23 @@ fillable 属性允许在动作中调用模型的 create 方法使用 title 和 t
 然后编写这个动作的视图，保存为 app/views/articles/index.blade.php：
 
 
-***
-&lt;h1&gt;Listing articles&lt;/h1&gt;
+```
+<h1>Listing articles</h1>
 
-&lt;table&gt;  
-  &lt;tr&gt;  
-    &lt;th>Title</th&gt;  
-    &lt;th>Text</th&gt;  
-  &lt;/tr&gt;  
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Text</th>
+  </tr>
 
-  @foreach ($articles as $article)   
-    &lt;tr&gt;  
-      &lt;td&gt;{{ $article->title }}&lt;/td&gt;    
-      &lt;td&gt;{{ $article->text }}&lt;/td&gt;   
-    &lt;/tr&gt;   
-  @endforeach   
-&lt;/table&gt;
-***
-
+  @foreach ($articles as $article)
+    <tr>
+      <td>{{ $article->title }}</td>
+      <td>{{ $article->text }}</td>
+    </tr>
+  @endforeach
+</table>
+```
 
 
 现在访问 http://localhost:8000/articles，会看到已经发布的文章列表。
@@ -606,25 +610,128 @@ link_to_route 是 Laravel 内置的视图帮助方法之一，根据提供的文
 
 然后修改  app/views/articles/create.blade.php 添加 ：
 
-***
-@if ($errors->any())  
-&lt;div id="error_explanation"&gt;  
-    &lt;h2&gt;{{ count($errors->all()) }} prohibited 
-      this article from being saved:&lt;/h2&gt;    
-    &lt;ul&gt;   
-    @foreach ($errors->all() as $message)   
-      &lt;li&gt;{{ $message }}&lt;/li&gt;  
-    @endforeach   
-    &lt;/ul&gt;  
-  &lt;/div&gt;  
+```
+@if ($errors->any())
+<div id="error_explanation">
+    <h2>{{ count($errors->all()) }} prohibited
+      this article from being saved:</h2>
+    <ul>
+    @foreach ($errors->all() as $message)
+      <li>{{ $message }}</li>
+    @endforeach
+    </ul>
+  </div>
 @endif
-***
+```
 
 再次访问 http://localhost:8000/articles/create，尝试发布一篇没有标题的文章，会看到一个很有用的错误提示。
 
 ###5.11 更新文章
 
-TODO 
+我们已经说明了 CRUD 中的 CR 两种操作。下面进入 U 部分，更新文章。
+
+首先，要在 ArticlesController 中更改 edit 动作：
+
+```
+	public function edit($id)
+	{
+		$article = Article::find($id);
+
+		return View::make('articles.edit', compact('article'));
+	}
+```
+
+视图中要添加一个类似新建文章的表单。新建 app/views/articles/edit.blade.php  文件，写入下面的代码：
+
+```
+<h1>Editing Article</h1>
+
+@if ($errors->any())
+<div id="error_explanation">
+    <h2>{{ count($errors->all()) }} prohibited
+      this article from being saved:</h2>
+    <ul>
+    @foreach ($errors->all() as $message)
+      <li>{{ $message }}</li>
+    @endforeach
+    </ul>
+  </div>
+@endif
+
+{{ Form::open(array('route' => array('articles.update', $article->id), 'method' => 'put')) }}
+    <p>
+        {{ Form::text('title', $article->title) }}
+    </p>
+    <p>
+        {{ Form::text('text', $article->text) }}
+    </p>
+    <p>
+        {{ Form::submit('submit') }}
+    </p>
+{{ Form::close() }}
+
+{{ link_to_route('articles.index', 'Back') }}
+```
+
+这里的表单指向 update 动作
+
+method: put ( patch ) 选项告诉 Laravel，提交这个表单时使用 PUT 方法发送请求。根据 REST 架构，更新资源时要使用 HTTP PUT 方法。
+
+然后，要在 app/controllers/ArticlesController.php 中更新 update 动作：
+
+```
+	public function update($id)
+	{
+		$rules = array('title' => 'required|min:5');
+
+		$validator = Validator::make(Input::all(), $rules);
+
+        if ($validator->fails())
+        {
+            return Redirect::route('articles.create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+		$article = Article::find($id);
+
+		$article->title = Input::get('title');
+		$article->text = Input::get('text');
+		$article->save();
+
+		return Redirect::route('articles.show', array($article->id));
+	}
+```
+
+最后，我们想在文章列表页面，在每篇文章后面都加上一个链接，指向 edit 动作。打开 app/views/articles/index.blade.php 文件，在“Show”链接后面添加“Edit”链接：
+
+```
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Text</th>
+    <th colspan="2"></th>
+  </tr>
+
+  @foreach ($articles as $article)
+    <tr>
+      <td>{{ $article->title }}</td>
+      <td>{{ $article->text }}</td>
+      <td>{{ link_to_route('articles.show', 'Show', $article->id) }}</td>
+      <td>{{ link_to_route('articles.edit', 'Edit', $article->id) }}</td>
+    </tr>
+  @endforeach
+</table>
+```
+
+我们还要在 app/views/articles/show.blade.php 模板的底部加上“Edit”链接：
+
+```
+{{ link_to_route('articles.index', 'Back') }} |
+{{ link_to_route('articles.edit', 'Edit', $article->id) }}
+```
+
+
 
 ##接下来做什么
 至此，我们开发了第一个 Laravel 程序，请尽情的修改、试验。在开发过程中难免会需要帮助，如果使用 Laravel 时需要协助，可以使用这些资源：
