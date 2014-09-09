@@ -144,9 +144,9 @@ app/filters.php | 此文件包含各种应用程序和路由筛选方法，用�
 $ php artisan serve
 ```
 
-上述命令会启动 PHP 内建的开发服务器，要查看程序，请打开一个浏览器窗口，访问 http://localhost:8000。应该会看到默认的 Laravel 信息页面：
+上述命令会启动 PHP 内建的开发服务器，要查看程序，请打开一个浏览器窗口，访问 http://localhost:8000 。应该会看到默认的 Laravel 信息页面：
 
-TODO 图片
+![](http://drp.io/files/540e55b3bfde6.png)
 
 > 要想停止服务器，请在命令行中按 Ctrl+C 键。服务器成功停止后回重新看到命令行提示符。在大多数类 Unix 系统中，包括 Mac OS X，命令行提示符是 $ 符号。
 
@@ -259,16 +259,12 @@ Route::resource('articles', 'ArticlesController');
 
 ```
 
-下一节，我们会加入新建文章和查看文章的功能。这两个操作分别对应于 CRUD 的 C 和 R，即创建和读取。新建文章的表单如下所示：
-
-TODO 图
-
-表单看起来很简陋，不过没关系，后文会加入更多的样式。
+下一节，我们会加入新建文章和查看文章的功能。这两个操作分别对应于 CRUD 的 C 和 R，即创建和读取。
 
 ###5.1 挖地基
 首先，程序中要有个页面用来新建文章。一个比较好的选择是 /articles/create。这个路由前面已经定义了，可以访问。打开 http://localhost:8000/articles/create ，会看到如下的路由错误：
 
-TODO 图
+![](http://drp.io/files/540e5636b9bd5.png)
 
 产生这个错误的原因是，没有定义用来处理该请求的控制器。解决这个问题的方法很简单：创建名为 ArticlesController 的控制器。执行下面的命令即可：
 
@@ -298,9 +294,9 @@ $ php artisan controller:make ArticlesController
 
 > 在 PHP 中，方法分为 public、private 和 protected 三种，只有 public 方法才能作为控制器的动作。
 
-现在刷新 http://localhost:8000/articles/create，会看到一个新错误：
+现在刷新 http://localhost:8000/articles/create ，会看到一个新错误：
 
-TODO 图
+![](http://drp.io/files/540e56a82547b.png)
 
 产生这个错误的原因是，Laravel 希望这样的常规动作有对应的视图，用来显示内容。没有视图可用，Laravel 就报错了。
 
@@ -310,7 +306,7 @@ TODO 图
 <h1>New Article</h1>
 ```
 
-再次刷新 http://localhost:8000/articles/create，可以看到页面中显示了一个标头。现在路由、控制器、动作和视图都能正常运行了。接下来要编写新建文章的表单了。
+再次刷新 http://localhost:8000/articles/create ， 可以看到页面中显示了一个标头。现在路由、控制器、动作和视图都能正常运行了。接下来要编写新建文章的表单了。
 
 ###5.2 首个表单
 要在模板中编写表单，可以使用“表单构造器”。Laravel 中常用的表单构造器是 `Form`。在 app/views/articles/create.blade.php 文件中加入以下代码：
@@ -480,7 +476,7 @@ protected $fillable = array('title', 'text');
 
 fillable 属性允许在动作中调用模型的 create 方法使用 title 和 text 属性。
 
-再次访问 http://localhost:8000/articles/create，填写表单，还差一步就能创建文章了。
+再次访问 http://localhost:8000/articles/create ，填写表单，还差一步就能创建文章了。
 
 ###5.7 显示文章
 和前面一样，我们要在 app/controllers/ArticlesController.php 文件中更改 show 动作，以及相应的视图文件。
@@ -510,7 +506,7 @@ fillable 属性允许在动作中调用模型的 create 方法使用 title 和 t
 </p>
 ```
 
-做了以上修改后，就能真正的新建文章了。访问 http://localhost:8000/articles/create，自己试试。
+做了以上修改后，就能真正的新建文章了。访问 http://localhost:8000/articles/create ，自己试试。
 
 ###5.8 列出所有文章
 我们还要列出所有文章，对应的路由是：
@@ -550,7 +546,7 @@ fillable 属性允许在动作中调用模型的 create 方法使用 title 和 t
 ```
 
 
-现在访问 http://localhost:8000/articles，会看到已经发布的文章列表。
+现在访问 http://localhost:8000/articles ，会看到已经发布的文章列表。
 
 ###5.9 添加链接
 
@@ -624,7 +620,7 @@ link_to_route 是 Laravel 内置的视图帮助方法之一，根据提供的文
 @endif
 ```
 
-再次访问 http://localhost:8000/articles/create，尝试发布一篇没有标题的文章，会看到一个很有用的错误提示。
+再次访问 http://localhost:8000/articles/create ，尝试发布一篇没有标题的文章，会看到一个很有用的错误提示。
 
 ###5.11 更新文章
 
