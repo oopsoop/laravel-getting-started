@@ -1,3 +1,6 @@
+更多资料
+https://github.com/huanghua581/laravel-getting-started/wiki
+
 # Laravel 入门
 
 本文介绍如何开始使用 Laravel。
