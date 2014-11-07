@@ -1,6 +1,5 @@
 更多资料
-http://cooper.lapland.name/
-
+http://laravel.lapland.name/
 
 # Laravel 入门
 
