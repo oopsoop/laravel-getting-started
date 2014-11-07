@@ -1,5 +1,6 @@
 更多资料
-https://github.com/huanghua581/laravel-getting-started/wiki
+http://cooper.lapland.name/
+
 
 # Laravel 入门
 
