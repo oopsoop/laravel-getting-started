@@ -687,7 +687,7 @@ method: put ( patch ) 选项告诉 Laravel，提交这个表单时使用 PUT 方
 
         if ($validator->fails())
         {
-            return Redirect::route('articles.create')
+            return Redirect::route('articles.edit')
                 ->withErrors($validator)
                 ->withInput();
         }
