@@ -1,4 +1,7 @@
-正在更新 5.0 版本，请稍后！ 4.2 版本请看 4.2.md 文档。
+
+4.2 版本请看 4.2.md 文档。
+
+5.1 官方教程：http://laravel.com/docs/5.1/quickstart
 
 # Laravel 入门
 
